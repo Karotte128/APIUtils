@@ -76,7 +76,7 @@ func SelectStruct[T any](pool *pgxpool.Pool, table string, where string, whereAr
 
 	if len(values) == 0 {
 		var zero T
-		return zero, pgx.ErrNoRows
+		return zero, nil
 	}
 
 	return values[0], nil
