@@ -1,0 +1,50 @@
+package simpleauth
+
+import (
+	"net/http"
+
+	"github.com/karotte128/karotteapi"
+	"github.com/karotte128/karotteapi/core"
+)
+
+var authMiddleware = karotteapi.Middleware{
+	Name:        "auth",
+	Handler:     authHandler,
+	Priority:    3,
+	ForceEnable: false,
+}
+
+func authHandler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		header := r.Header.Get("X-API-Key")
+
+		var authInfo AuthInfo
+
+		if header == "" {
+			authInfo.ApiKey = ""
+			authInfo.Permissions = nil
+		} else {
+			authInfo.ApiKey = header
+			authInfo.Permissions = getPermissions(header)
+		}
+
+		ctx := setAuthInfo(r.Context(), &authInfo)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func init() {
+	core.RegisterMiddleware(authMiddleware)
+}
+
+func getPermissions(key string) []string {
+	permissionProvider := getPermissionProvider()
+	var permissions []string
+
+	if permissionProvider != nil {
+		permissions = permissionProvider(key)
+	}
+
+	return permissions
+}
