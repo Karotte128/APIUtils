@@ -39,7 +39,7 @@ func init() {
 }
 
 func getPermissions(key string) []string {
-	permissionProvider := getPermissionProvider()
+	permissionProvider := permProvider
 	var permissions []string
 
 	if permissionProvider != nil {

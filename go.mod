@@ -9,7 +9,7 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/pgx/v5 v5.8.0 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
-	github.com/karotte128/karotteapi v0.0.0-20260214231348-7484bbffcda4 // indirect
+	github.com/karotte128/karotteapi v0.0.0-20260214235053-c830ddca7d5c // indirect
 	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
 )

@@ -1,4 +1,4 @@
-package permissions
+package db_perm
 
 import (
 	"github.com/jackc/pgx/v5/pgxpool"

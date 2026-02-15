@@ -26,7 +26,7 @@ func setAuthInfo(ctx context.Context, authInfo *AuthInfo) context.Context {
 	return core.SetRequestContext(ctx, &reqCtx)
 }
 
-func getAuthInfo(ctx context.Context) *AuthInfo {
+func GetAuthInfo(ctx context.Context) *AuthInfo {
 	reqCtx := core.GetRequestContext(ctx, "auth")
 
 	return reqCtx.Info.(*AuthInfo)
