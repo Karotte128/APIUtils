@@ -19,6 +19,7 @@ func HasPermission(ctx context.Context, perm string) bool {
 	return checkPermission(*info, perm)
 }
 
+// This sets up simpleauth using the permission provider.
 func Setup(provider PermissionProvider) {
 	permProvider = provider
 }
