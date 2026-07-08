@@ -3,6 +3,8 @@ package config
 import (
 	"os"
 
+	cfg "github.com/karotte128/karottelib/config"
+
 	"github.com/pelletier/go-toml/v2"
 )
 
@@ -27,5 +29,5 @@ func ReadConfigFromFile(path string) (error, map[string]any) {
 
 // Replaces ${VAR} or ${VAR:-default} in the config with environment variables.
 func ExpandEnvConfig(input map[string]any) map[string]any {
-	return expandEnvRecursive(input).(map[string]any)
+	return cfg.ExpandEnvRecursive(input).(map[string]any)
 }

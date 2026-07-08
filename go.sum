@@ -15,6 +15,10 @@ github.com/karotte128/karotteapi v0.0.0-20260214235053-c830ddca7d5c h1:XAXcursh1
 github.com/karotte128/karotteapi v0.0.0-20260214235053-c830ddca7d5c/go.mod h1:BJMEN7QsVWHnsEv/85qj4roNBaCp/MRxE3var0a22uU=
 github.com/karotte128/karotteapi v0.0.0-20260612215538-453722de76a4 h1:dw1mGcsIpipFB6BPaM8+V9dIpR5Qc7kujVjRdphvJs8=
 github.com/karotte128/karotteapi v0.0.0-20260612215538-453722de76a4/go.mod h1:BJMEN7QsVWHnsEv/85qj4roNBaCp/MRxE3var0a22uU=
+github.com/karotte128/karotteapi v0.0.0-20260708230317-34bad6da0133 h1:ZyCZJSam6MIEK5HzSlxiH6k3zkmGMq35S9k9dI9/tYg=
+github.com/karotte128/karotteapi v0.0.0-20260708230317-34bad6da0133/go.mod h1:TQutjyWjaTUnpsrphGkr/ZztXYLsChR8C/7uAWUjlsg=
+github.com/karotte128/karottelib v0.0.0-20260708225645-8c9aecfd0937 h1:/cO8tTbFoKc1WcPUKIswTLgdAcNiSvVp/040RmCqUWg=
+github.com/karotte128/karottelib v0.0.0-20260708225645-8c9aecfd0937/go.mod h1:vWyEWZulP6lAEnxAHuY/Ofe2gnyWWGkqy6r5XefEl/s=
 github.com/pelletier/go-toml/v2 v2.2.4 h1:mye9XuhQ6gvn5h28+VilKrrPoQVanw5PMw/TB0t5Ec4=
 github.com/pelletier/go-toml/v2 v2.2.4/go.mod h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
