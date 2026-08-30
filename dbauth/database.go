@@ -15,7 +15,7 @@ type DbAuthInfo struct {
 }
 
 func UpdateAuth(connpool *pgxpool.Pool, table string, data DbAuthInfo) error {
-	err := database.UpdateStruct(connpool, table, data, "apikey = $3", data.ApiKey)
+	err := database.UpdateStruct(connpool, table, data, "apikey = $5", data.ApiKey)
 
 	return err
 }
