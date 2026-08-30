@@ -3,11 +3,10 @@ package simpleauth
 import (
 	"net/http"
 
-	"github.com/karotte128/karotteapi"
-	"github.com/karotte128/karotteapi/core"
+	"github.com/karotte128/karotteapi/v2/api"
 )
 
-var authMiddleware = karotteapi.Middleware{
+var authMiddleware = api.Middleware{
 	Name:        "auth",
 	Handler:     authHandler,
 	Priority:    3,
@@ -16,35 +15,29 @@ var authMiddleware = karotteapi.Middleware{
 
 func authHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if authProvider.ReadAuthInfo == nil {
+			http.Error(w, "Internal Server Error: Auth provider not set!", http.StatusInternalServerError)
+			return
+		}
+
 		header := r.Header.Get("X-API-Key")
 
 		var authInfo AuthInfo
+		var err error
 
-		if header == "" {
-			authInfo.ApiKey = ""
-			authInfo.Permissions = nil
-		} else {
-			authInfo.ApiKey = header
-			authInfo.Permissions = getPermissions(header)
+		authInfo, err = authProvider.ReadAuthInfo(header)
+
+		if err != nil {
+			http.Error(w, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
+			return
 		}
 
-		ctx := setAuthInfo(r.Context(), &authInfo)
+		setAuthInfo(r, &authInfo)
 
-		next.ServeHTTP(w, r.WithContext(ctx))
+		next.ServeHTTP(w, r)
 	})
 }
 
 func init() {
-	core.RegisterMiddleware(authMiddleware)
-}
-
-func getPermissions(key string) []string {
-	permissionProvider := permProvider
-	var permissions []string
-
-	if permissionProvider != nil {
-		permissions = permissionProvider(key)
-	}
-
-	return permissions
+	api.RegisterMiddleware(authMiddleware)
 }

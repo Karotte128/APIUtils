@@ -1,10 +1,10 @@
 package simpleauth
 
 import (
-	"context"
+	"net/http"
+	"time"
 
-	"github.com/karotte128/karotteapi"
-	"github.com/karotte128/karotteapi/core"
+	"github.com/karotte128/karotteapi/v2/api"
 )
 
 // AuthInfo is created by the auth middleware.
@@ -15,19 +15,36 @@ type AuthInfo struct {
 
 	// Permissions is the list of permissions the user has.
 	Permissions []string
+
+	// ValidUntil is a timestamp used to invalidate API keys.
+	ValidUntil time.Time
+
+	// Info can contain additional information about the key (like metadata)
+	Info map[string]any
 }
 
-func setAuthInfo(ctx context.Context, authInfo *AuthInfo) context.Context {
-	reqCtx := karotteapi.RequestContext{
-		Info:       authInfo,
-		ContextKey: "auth",
+func setAuthInfo(r *http.Request, authInfo *AuthInfo) {
+	api.SetRequestContext(r, "auth.info", authInfo)
+}
+
+func getAuthInfo(r *http.Request) (*AuthInfo, bool) {
+	info, ok := api.GetRequestContext[*AuthInfo](r, "auth.info")
+	if !ok {
+		return nil, false
 	}
 
-	return core.SetRequestContext(ctx, &reqCtx)
+	if info == nil {
+		return nil, false
+	}
+
+	return info, true
 }
 
-func GetAuthInfo(ctx context.Context) *AuthInfo {
-	reqCtx := core.GetRequestContext(ctx, "auth")
+func GetAuthInfo(r *http.Request) (AuthInfo, bool) {
+	info, ok := api.GetRequestContext[*AuthInfo](r, "auth.info")
+	if !ok {
+		return AuthInfo{}, false
+	}
 
-	return reqCtx.Info.(*AuthInfo)
+	return *info, true
 }

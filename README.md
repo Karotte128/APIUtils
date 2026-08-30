@@ -2,7 +2,7 @@
 
 **APIUtils** is a collection of utility packages for enhancing and supporting usage of the **[Karotte128/KarotteAPI](https://github.com/karotte128/karotteapi)** Go API framework. It contains features that don’t belong in the core framework itself but are useful across API projects using KarotteAPI.
 
-This repository does *not* contain a standalone server; it provides helpers for configuration, database integration, permission providers, and common utilities for API applications.
+This repository does *not* contain a standalone server; it provides helpers for configuration, database integration, authentication providers, and common utilities for API applications.
 
 ---
 
@@ -12,7 +12,7 @@ Currently included (folder names):
 
 - `config` — helpers to load configuration from file and expand environment variables.
 - `database` — utilities for postgresql database integration.
-- `db_perm` — database-driven permission provider.
+- `dbauth` — database-driven authentication provider.
 - `simpleauth` — basic authentication provider.
 - Other utility packages as needed by API applications.
 
@@ -64,17 +64,17 @@ This can be used to update a struct in a postgresql table.
 
 ---
 
-### db_perm
+### dbauth
 
-This is a simple permission provider for `simpleauth` using a database.
+This is a simple authentication provider for `simpleauth` using a database.
 
-`GetPermission`, `SetPermission` and `UpdatePermission` are used to interact with the permission data in the database.
+`GetAuth`, `SetAuth` and `UpdateAuth` are used to interact with the authentication data in the database.
 
-`GetPermissionWrapper` is the permission provider to use with simpleauth.
+`GetAuthProvider` is the authentication provider to use with simpleauth.
 
 Usage:
 ```go
-simpleauth.Setup(db_perm.GetPermissionWrapper) // use db_perm as permission  provider for simpleauth
+simpleauth.Setup(dbauth.GetAuthProvider) // use dbauth as auth provider for simpleauth
 ```
 
 ---
@@ -83,9 +83,11 @@ simpleauth.Setup(db_perm.GetPermissionWrapper) // use db_perm as permission  pro
 
 The `simpleauth` package provides a simple, API-Key based authentication system.
 
-To use it, a `PermissionProvider` is needed. This is a `type PermissionProvider func(string) []string` that takes a `string` containing the API key and returns a `[]string` of permissions.
+To use it, a `AuthProvider` is needed. This is a struct that contains two functions that must be implemented:
+- `ReadAuthInfo  func(string) (AuthInfo, error)`
+- `WriteAuthInfo func(AuthInfo) error`
 
-APIUtils includes a default database permission provider, `db_perm`.
+APIUtils includes a default database auth provider, `dbauth`.
 
 To use simpleauth, set it up before calling `api.InitAPI()`.
 
@@ -93,16 +95,22 @@ Example:
 ```go
 database.CreateConnection(dbconn) // First, create the database connection.
 
-simpleauth.Setup(db_perm.GetPermissionWrapper) // Set up simpleauth with the permission provider. In this example the included db_perm provider is used.
+simpleauth.Setup(dbauth.GetAuthProvider) // Set up simpleauth with the authentication provider. In this example the included dbauth provider is used.
 
-api.InitAPI(details) // Start the KarotteAPI API server.
+api.InitAPI(config) // Start the KarotteAPI API server.
 ```
 
-To use the authentication check inside of a module, include the `simpleauth.HasPermission(context.Context, string)` check in the module request handler.
+To use the authentication check inside of a module, include the `simpleauth.HasPermission(AuthInfo, string)` check in the module request handler.
 
 ```go
 func Handler(w http.ResponseWriter, r *http.Request) {
-	hasPermission := simpleauth.HasPermission(r.Context(), "exampleperm") // Check for permission using the request context
+	authInfo, ok := simpleauth.GetAuthInfo(r)
+	if !ok {
+		http.Error(w, "Unauthorized", 401)
+		return
+	}
+
+	hasPermission := simpleauth.HasPermission(authInfo, "exampleperm") // Check for permission using the request context
 
     if !hasPermission {
         http.Error(w, "Unauthorized", 401) // Client does not have the permission
@@ -117,7 +125,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 ## Example Setup
 
-This is a fully functional example setup, using the config system, postgresql database as permission provider and simpleauth for API-Key based authentication.
+This is a fully functional example setup, using the config system, postgresql database as authentication provider and simpleauth for API-Key based authentication.
 
 ```go
 //main.go
@@ -128,7 +136,7 @@ import (
 
 	"github.com/karotte128/apiutils/config"
 	"github.com/karotte128/apiutils/database"
-	"github.com/karotte128/apiutils/db_perm"
+	"github.com/karotte128/apiutils/dbauth"
 	"github.com/karotte128/apiutils/simpleauth"
 	"github.com/karotte128/karotteapi"
 	"github.com/karotte128/karotteapi/api"
@@ -150,10 +158,8 @@ func main() {
 
 	database.CreateConnection(dbconn) // Create the database connection (apiutils/database)
 
-	simpleauth.Setup(db_perm.GetPermissionWrapper) // Set up simpleauth using the db_perm permission provider (apiutils/simpleauth and apiutils/db_perm)
+	simpleauth.Setup(dbauth.GetAuthProvider) // Set up simpleauth using the dbauth authenticaton provider (apiutils/simpleauth and apiutils/dbauth)
 
-	var details karotteapi.ApiDetails // Create the API details (karotteapi)
-	details.Config = conf // Set the config
-	api.InitAPI(details) // Start the KarotteAPI server (karotteapi/api)
+	api.InitAPI(conf) // Start the KarotteAPI server (karotteapi/api)
 }
 ```

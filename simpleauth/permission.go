@@ -2,6 +2,7 @@ package simpleauth
 
 import (
 	"strings"
+	"time"
 )
 
 func permissionMatch(pattern string, permission string) bool {
@@ -34,4 +35,13 @@ func checkPermission(info AuthInfo, requiredPerm string) bool {
 	}
 
 	return false
+}
+
+// This function checks if the AuthInfo of a request has the given permission.
+func HasPermission(info AuthInfo, perm string) bool {
+	if info.ValidUntil.Before(time.Now()) {
+		return false
+	}
+
+	return checkPermission(info, perm)
 }
