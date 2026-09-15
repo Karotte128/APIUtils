@@ -43,10 +43,6 @@ func checkPermission(info AuthInfo, requiredPerm string) bool {
 
 // This function checks if the AuthInfo of a request has the given permission.
 func HasPermission(info AuthInfo, perm string) (bool, error) {
-	if info.ValidUntil.Before(time.Now()) {
-		return false, nil
-	}
-
 	cfg, ok := api.GetMiddlewareConfig("auth")
 	if !ok {
 		return false, errors.New("No middleware config!")
@@ -57,9 +53,17 @@ func HasPermission(info AuthInfo, perm string) (bool, error) {
 		return false, errors.New("Internal Server Error: Config value basePermissions not set!")
 	}
 
-	combined := slices.Concat(info.Permissions, basePermissions)
-	slices.Sort(combined)
-	info.Permissions = slices.Compact(combined)
+	if info.ApiKey != "" {
+		if info.ValidUntil.Before(time.Now()) {
+			return false, nil
+		}
+
+		combined := slices.Concat(info.Permissions, basePermissions)
+		slices.Sort(combined)
+		info.Permissions = slices.Compact(combined)
+	} else {
+		info.Permissions = basePermissions
+	}
 
 	return checkPermission(info, perm), nil
 }
