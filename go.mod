@@ -1,10 +1,10 @@
-module github.com/karotte128/apiutils/v2
+module github.com/karotte128/apiutils/v3
 
 go 1.26.4
 
 require (
 	github.com/jackc/pgx/v5 v5.8.0
-	github.com/karotte128/karotteapi/v2 v2.0.0
+	github.com/karotte128/karotteapi/v3 v3.0.0
 	github.com/karotte128/karottelib v0.0.0-20260708225645-8c9aecfd0937
 	github.com/pelletier/go-toml/v2 v2.2.4
 )

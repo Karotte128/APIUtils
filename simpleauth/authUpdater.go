@@ -5,9 +5,6 @@ import (
 	"maps"
 	"net/http"
 	"slices"
-
-	"github.com/karotte128/karotteapi/v2/api"
-	"github.com/karotte128/karottelib/config"
 )
 
 func UpdateAuthInfo(r *http.Request, newAuthInfo AuthInfo) error {
@@ -18,26 +15,6 @@ func UpdateAuthInfo(r *http.Request, newAuthInfo AuthInfo) error {
 	oldAuthInfo, ok := getAuthInfo(r)
 	if !ok {
 		return errors.New("auth info is not set")
-	}
-
-	cfg, ok := api.GetMiddlewareConfig("auth")
-	if !ok {
-		return errors.New("No middleware config!")
-	}
-
-	allowUpdatePermissions, ok := config.GetNestedValue[bool](cfg, "allowUpdatePermissions")
-	if !ok {
-		return errors.New("Config value not set!")
-	}
-
-	allowUpdateInfo, ok := config.GetNestedValue[bool](cfg, "allowUpdateInfo")
-	if !ok {
-		return errors.New("Config value not set!")
-	}
-
-	allowUpdateValidUntil, ok := config.GetNestedValue[bool](cfg, "allowUpdateValidUntil")
-	if !ok {
-		return errors.New("Config value not set!")
 	}
 
 	if !allowUpdatePermissions && !slices.Equal(oldAuthInfo.Permissions, newAuthInfo.Permissions) {

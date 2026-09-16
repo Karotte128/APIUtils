@@ -1,13 +1,9 @@
 package simpleauth
 
 import (
-	"errors"
 	"slices"
 	"strings"
 	"time"
-
-	"github.com/karotte128/karotteapi/v2/api"
-	"github.com/karotte128/karottelib/config"
 )
 
 func permissionMatch(pattern string, permission string) bool {
@@ -42,20 +38,10 @@ func checkPermission(info AuthInfo, requiredPerm string) bool {
 }
 
 // This function checks if the AuthInfo of a request has the given permission.
-func HasPermission(info AuthInfo, perm string) (bool, error) {
-	cfg, ok := api.GetMiddlewareConfig("auth")
-	if !ok {
-		return false, errors.New("No middleware config!")
-	}
-
-	basePermissions, ok := config.GetNestedValue[[]string](cfg, "basePermissions")
-	if !ok {
-		return false, errors.New("Internal Server Error: Config value basePermissions not set!")
-	}
-
+func HasPermission(info AuthInfo, perm string) bool {
 	if info.ApiKey != "" {
 		if info.ValidUntil.Before(time.Now()) {
-			return false, nil
+			return false
 		}
 
 		combined := slices.Concat(info.Permissions, basePermissions)
@@ -65,5 +51,5 @@ func HasPermission(info AuthInfo, perm string) (bool, error) {
 		info.Permissions = basePermissions
 	}
 
-	return checkPermission(info, perm), nil
+	return checkPermission(info, perm)
 }

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/karotte128/karotteapi/v2/api"
+	"github.com/karotte128/karotteapi/v3/api"
 )
 
 // AuthInfo is created by the auth middleware.

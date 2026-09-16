@@ -3,8 +3,8 @@ package dbauth
 import (
 	"errors"
 
-	"github.com/karotte128/apiutils/v2/database"
-	"github.com/karotte128/apiutils/v2/simpleauth"
+	"github.com/karotte128/apiutils/v3/database"
+	"github.com/karotte128/apiutils/v3/simpleauth"
 )
 
 // This is a database based permission provider for simpleauth.

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/karotte128/apiutils/v2/database"
+	"github.com/karotte128/apiutils/v3/database"
 )
 
 type DbAuthInfo struct {
